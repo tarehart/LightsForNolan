@@ -9,7 +9,15 @@ repositories {
     mavenCentral()
 }
 
+val ktorVersion = "3.1.0"
+
 dependencies {
+//    implementation("io.ktor:ktor-server-core:${ktorVersion}")
+//    implementation("io.ktor:ktor-server-netty:${ktorVersion}")
+    implementation("io.ktor:ktor-client-core:${ktorVersion}")
+    implementation("io.ktor:ktor-client-cio:${ktorVersion}")
+    implementation("io.ktor:ktor-client-websockets:${ktorVersion}")
+
     testImplementation(kotlin("test"))
 }
 
