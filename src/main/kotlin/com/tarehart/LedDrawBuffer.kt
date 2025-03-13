@@ -45,7 +45,7 @@ class LedDrawBuffer(
         fillRect(0, 0, this.width, this.height, color)
     }
 
-    fun getPixelsToDraw(): Collection<Pair<Int, Color>> {
+    fun getPixelsRaw(): Collection<Pair<Int, Color>> {
         val pixels = pendingImage.getRGB(0, 0, width, height, null, 0, width)
 
         return pixels
@@ -54,7 +54,28 @@ class LedDrawBuffer(
                 val col = index % width
                 serpentine[row][col] to Color(colorValue, true)
             }
+    }
+
+    fun getPixelsToDraw(): Collection<Pair<Int, Color>> {
+        return getPixelsRaw()
             .filter { it.second.alpha > 0 }
+    }
+
+    fun getByteArray(): ByteArray {
+        val pixels = getPixelsRaw()
+            .associate { it.first to it.second }
+
+        val byteArray = ByteArray(height * width * 3)
+
+        var index = 0
+        for (ledIndex in 0 until height * width) {
+            val color = pixels.getOrElse(ledIndex) { Color.BLACK }
+            byteArray[index++] = color.red.toByte()
+            byteArray[index++] = color.green.toByte()
+            byteArray[index++] = color.blue.toByte()
+        }
+
+        return byteArray
     }
 
     fun prepareNextFrame() {

@@ -2,6 +2,7 @@ package com.tarehart
 
 import com.tarehart.com.tarehart.Animation
 import com.tarehart.com.tarehart.LedDrawBuffer
+import com.tarehart.com.tarehart.WledInterface
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -12,9 +13,17 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.awt.Rectangle
+import java.net.DatagramPacket
+import java.net.DatagramSocket
+import java.net.InetAddress
 
 
 const val wledHost = "192.168.0.109"
+const val udpPort = 21324
+
+val address = InetAddress.getByName(wledHost)
+
+val udpInterface = WledInterface(wledHost, udpPort)
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -40,16 +49,19 @@ fun main() {
 
             while(true) {
                 animation.step(frameMillis, ledDiff)
-                val commands = buildCommands(ledDiff)
-                commands.forEach {
-                    send(it)
-                    println(it)
-                    delay(10)
-                }
-                if (commands.size > 1) {
-                    println("Multiple commands: " + commands.size)
-                }
-                delay(frameMillis - commands.size * commandMillis)
+                udpInterface.sendWarls(ledDiff)
+                delay(33)
+
+//                val commands = buildWebsocketCommands(ledDiff)
+//                commands.forEach {
+//                    send(it)
+//                    println(it)
+//                    delay(10)
+//                }
+//                if (commands.size > 1) {
+//                    println("Multiple commands: " + commands.size)
+//                }
+//                delay(frameMillis - commands.size * commandMillis)
                 ledDiff.prepareNextFrame()
             }
         }
@@ -58,7 +70,7 @@ fun main() {
 
 }
 
-fun buildCommands(ledDiff: LedDrawBuffer): List<String> {
+fun buildWebsocketCommands(ledDiff: LedDrawBuffer): List<String> {
 
     return ledDiff.getPixelsToDraw()
         .chunked(100)

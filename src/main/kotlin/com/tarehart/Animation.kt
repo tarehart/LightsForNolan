@@ -39,7 +39,7 @@ class Animation(bounds: Rectangle) {
             x = ballBounds.minX.toInt()
         }
 
-        if (Instant.now().epochSecond % 10 > 3) {
+        if (Instant.now().epochSecond % 10 > 2) {
             drawBuffer.fillRect(x, y, 3, 3, rainbowVendor.nextColor())
         } else {
             drawBuffer.fillRect(x, y, 5, 5, Color.BLACK)
