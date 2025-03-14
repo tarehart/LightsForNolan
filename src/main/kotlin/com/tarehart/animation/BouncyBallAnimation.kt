@@ -1,10 +1,12 @@
-package com.tarehart.com.tarehart
+package com.tarehart.com.tarehart.animation
 
+import com.tarehart.com.tarehart.draw.LedDrawBuffer
+import com.tarehart.com.tarehart.draw.RainbowVendor
 import java.awt.Color
 import java.awt.Rectangle
 import java.time.Instant
 
-class Animation(bounds: Rectangle) {
+class BouncyBallAnimation(bounds: Rectangle) {
 
     var x = 0
     var y = 0
@@ -16,9 +18,7 @@ class Animation(bounds: Rectangle) {
     val ballSize = 3
     val ballBounds = Rectangle(bounds.x, bounds.y, bounds.width - ballSize, bounds.height - ballSize)
 
-    fun step(elapsedMillis: Int, drawBuffer: LedDrawBuffer) {
-        // drawBuffer.clearAll()
-
+    fun step(elapsedMillis: Long, drawBuffer: LedDrawBuffer) {
         x += vx
         y += vy
 

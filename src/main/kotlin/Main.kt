@@ -1,8 +1,10 @@
 package com.tarehart
 
-import com.tarehart.com.tarehart.Animation
-import com.tarehart.com.tarehart.LedDrawBuffer
-import com.tarehart.com.tarehart.WledInterface
+import com.tarehart.com.tarehart.animation.BouncyBallAnimation
+import com.tarehart.com.tarehart.draw.ImageLibrary
+import com.tarehart.com.tarehart.wled.PixelPusher
+import com.tarehart.com.tarehart.wled.WledInterface
+import com.tarehart.com.tarehart.model.SerpentinePixelMap
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -12,18 +14,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import java.awt.Color
 import java.awt.Rectangle
-import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.InetAddress
 
 
 const val wledHost = "192.168.0.109"
 const val udpPort = 21324
-
-val address = InetAddress.getByName(wledHost)
-
-val udpInterface = WledInterface(wledHost, udpPort)
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -33,10 +29,13 @@ fun main() {
         install(WebSockets)
     }
 
-    val ledDiff = LedDrawBuffer(18, 11)
-    val animation = Animation(Rectangle(0, 0, ledDiff.width, ledDiff.height))
-    val frameMillis = 50
-    val commandMillis = 10L
+    val width = 18
+    val height = 11
+
+    val udpInterface = WledInterface(wledHost, udpPort)
+    val pixelPusher = PixelPusher(SerpentinePixelMap(width, height), udpInterface)
+    val animation = BouncyBallAnimation(Rectangle(0, 0, width, height))
+    val frameMillis = 50L
 
     runBlocking {
         client.webSocket(method = HttpMethod.Get, host = wledHost, port = 80, path = "/ws") {
@@ -47,41 +46,24 @@ fun main() {
                 }
             }
 
-            while(true) {
-                animation.step(frameMillis, ledDiff)
-                udpInterface.sendWarls(ledDiff)
-                delay(33)
+            pixelPusher.buffer.clearAll()
+            pixelPusher.sendOpaquePixels()
 
-//                val commands = buildWebsocketCommands(ledDiff)
-//                commands.forEach {
-//                    send(it)
-//                    println(it)
-//                    delay(10)
-//                }
-//                if (commands.size > 1) {
-//                    println("Multiple commands: " + commands.size)
-//                }
-//                delay(frameMillis - commands.size * commandMillis)
-                ledDiff.prepareNextFrame()
+            pixelPusher.buffer.drawText("Hello", -1, 9, Color.GREEN, 9)
+            pixelPusher.sendOpaquePixels()
+            delay(5000)
+
+            pixelPusher.buffer.drawImage(ImageLibrary.flag)
+            pixelPusher.sendAllPixels()
+            delay(5000)
+
+            while(true) {
+                animation.step(frameMillis, pixelPusher.buffer)
+                pixelPusher.sendOpaquePixels()
+                delay(frameMillis)
             }
         }
     }
     client.close()
 
-}
-
-fun buildWebsocketCommands(ledDiff: LedDrawBuffer): List<String> {
-
-    return ledDiff.getPixelsToDraw()
-        .chunked(100)
-        .map {
-            val commandContent = it.joinToString(",") { (index, color) ->
-                val hex = String.format("%02x%02x%02x", color.red, color.green, color.blue)
-                """$index,"$hex""""
-            }
-
-            """
-            {"seg":[{"i":[$commandContent]}]}
-            """.trimIndent()
-        }
 }
