@@ -20,9 +20,7 @@ class WledInterface:
 
         for pixel in pixels:
             bytes_data.append(pixel.index)
-            bytes_data.append(pixel.color[0])  # Unpack (R, G, B)
-            bytes_data.append(pixel.color[1])
-            bytes_data.append(pixel.color[2])
+            bytes_data.extend(pixel.color[0:3])  # Unpack (R, G, B)
 
         # Send packet
         self.udp_socket.sendto(bytes_data, self.address)
@@ -34,7 +32,7 @@ class WledInterface:
         bytes_data = bytearray([self.DRGB_FORMAT, seconds_to_persist])
 
         for color in pixels:
-            bytes_data.extend(color)  # Unpack (R, G, B)
+            bytes_data.extend(color[0:3])  # Unpack (R, G, B)
 
         # Send packet
         self.udp_socket.sendto(bytes_data, self.address)

@@ -23,6 +23,10 @@ class LedDrawBuffer:
         image = image.resize((width, height))
         self.image.paste(image, (x, y))
 
+
+    def draw_line(self, start: Tuple[int, int], end: Tuple[int, int], color: Tuple[int, int, int]):
+        self.draw.line([start, end], color)
+
     def fill_rect(self, x: int, y: int, width: int, height: int, color: Tuple[int, int, int, int]):
         """Fill a rectangle with a given color."""
         self.draw.rectangle([x, y, x + width - 1, y + height - 1], fill=color)

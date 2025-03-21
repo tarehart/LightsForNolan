@@ -23,9 +23,13 @@ if __name__ == '__main__':
 
     clock = Clock()
 
+    pixel_pusher.buffer.clear_all()
+    pixel_pusher.send_all_pixels()
+
+
     while True:
-        clock.tick(60)
-        touch_pane.step()
+        clock.tick(30)
+        touch_pane.step(pixel_pusher.buffer)
         animation.step(pixel_pusher.buffer)
         pixel_pusher.send_opaque_pixels()
 

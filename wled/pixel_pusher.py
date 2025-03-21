@@ -22,7 +22,7 @@ class PixelPusher:
         pixel_array: List[Tuple[int, int, int]] = [(0, 0, 0)] * self.pixel_map.num_pixels
 
         for pixel in pixels:
-            pixel_array[pixel.index] = pixel.color
+            pixel_array[pixel.index] = pixel.color[0:3]
 
         self.wled_interface.send_all_pixels(pixel_array)
         self.buffer = LedDrawBuffer(self.pixel_map)
