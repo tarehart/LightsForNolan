@@ -1,6 +1,6 @@
-package com.tarehart.com.tarehart.wled
+package com.tarehart.wled
 
-import com.tarehart.com.tarehart.model.IndexedPixel
+import com.tarehart.model.IndexedPixel
 import java.awt.Color
 import java.net.DatagramPacket
 import java.net.DatagramSocket

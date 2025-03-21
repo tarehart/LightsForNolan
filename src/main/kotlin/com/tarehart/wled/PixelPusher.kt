@@ -1,7 +1,7 @@
-package com.tarehart.com.tarehart.wled
+package com.tarehart.wled
 
-import com.tarehart.com.tarehart.draw.LedDrawBuffer
-import com.tarehart.com.tarehart.model.SerpentinePixelMap
+import com.tarehart.draw.LedDrawBuffer
+import com.tarehart.model.SerpentinePixelMap
 import java.awt.Color
 
 class PixelPusher(

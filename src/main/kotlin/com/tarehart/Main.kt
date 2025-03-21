@@ -1,10 +1,12 @@
 package com.tarehart
 
-import com.tarehart.com.tarehart.animation.BouncyBallAnimation
-import com.tarehart.com.tarehart.draw.ImageLibrary
-import com.tarehart.com.tarehart.model.SerpentinePixelMap
-import com.tarehart.com.tarehart.wled.PixelPusher
-import com.tarehart.com.tarehart.wled.WledInterface
+import com.tarehart.animation.BouncyBallAnimation
+import com.tarehart.draw.ImageLibrary
+import com.tarehart.model.SerpentinePixelMap
+import com.tarehart.wled.PixelPusher
+import com.tarehart.wled.WledInterface
+import com.tarehart.touch.TouchPane
+import javafx.application.Application
 import java.awt.Color
 import java.awt.Rectangle
 import java.lang.Thread.sleep
@@ -16,6 +18,8 @@ const val udpPort = 21324
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 fun main() {
+
+    Application.launch(TouchPane::class.java)
 
     val width = 18
     val height = 11

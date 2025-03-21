@@ -1,7 +1,7 @@
-package com.tarehart.com.tarehart.animation
+package com.tarehart.animation
 
-import com.tarehart.com.tarehart.draw.LedDrawBuffer
-import com.tarehart.com.tarehart.draw.RainbowVendor
+import com.tarehart.draw.LedDrawBuffer
+import com.tarehart.draw.RainbowVendor
 import java.awt.Color
 import java.awt.Rectangle
 import java.time.Instant

@@ -1,7 +1,7 @@
-package com.tarehart.com.tarehart.draw
+package com.tarehart.draw
 
-import com.tarehart.com.tarehart.model.IndexedPixel
-import com.tarehart.com.tarehart.model.SerpentinePixelMap
+import com.tarehart.model.IndexedPixel
+import com.tarehart.model.SerpentinePixelMap
 import java.awt.Color
 import java.awt.Font
 import java.awt.image.BufferedImage

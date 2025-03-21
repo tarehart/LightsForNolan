@@ -1,4 +1,4 @@
-package com.tarehart.com.tarehart.model
+package com.tarehart.model
 
 import java.awt.Color
 

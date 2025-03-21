@@ -1,4 +1,4 @@
-package com.tarehart.com.tarehart.draw
+package com.tarehart.draw
 
 import java.awt.Color
 import java.util.concurrent.atomic.AtomicInteger

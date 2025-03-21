@@ -1,4 +1,4 @@
-package com.tarehart.com.tarehart.draw
+package com.tarehart.draw
 
 import java.awt.image.BufferedImage
 import java.io.FileNotFoundException
