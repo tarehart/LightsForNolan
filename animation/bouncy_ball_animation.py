@@ -48,6 +48,6 @@ class BouncyBallAnimation:
             self.x = self.ball_bounds.min_x
 
         if datetime.now().second % 10 > 2:
-            draw_buffer.fill_rect(self.x, self.y, 3, 3, self.rainbow_vendor.next_color() + (1,))
+            draw_buffer.fill_rect(self.x, self.y, 3, 3, self.rainbow_vendor.next_color() + (255,))
         else:
             draw_buffer.fill_rect(self.x, self.y, 5, 5, (0, 0, 0, 255))  # Black
