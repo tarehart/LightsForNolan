@@ -32,6 +32,7 @@ class HostScreen:
 
     def render_led_buffer(self, surface: Surface):
         led_scaled = pygame.transform.scale_by(surface,16)
+        self.screen.fill((0, 0, 0, 255), (0, 0, led_scaled.get_width(), led_scaled.get_height()))
         self.screen.blit(led_scaled, (0, 0))
 
     def render_logs(self):

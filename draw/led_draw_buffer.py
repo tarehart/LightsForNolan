@@ -19,10 +19,13 @@ class LedDrawBuffer:
     def fill_rect(self, x: int, y: int, width: int, height: int, color: Tuple[int, int, int, int]):
         pygame.draw.rect(self.surface, color, (x, y, width, height))
 
+    def draw_image(self, image: Surface, x: int, y: int):
+        self.surface.blit(image, (x, y))
+
     def draw_text(self, text: str, x: int, y: int, color: Tuple[int, int, int, int], size: int):
         font = pygame.font.SysFont("Arial", size)
         text_image = font.render(text, antialias=False, color=color)
-        self.surface.blit(text_image, (x, y))
+        self.draw_image(text_image, x, y)
 
     def clear_all(self, color: Tuple[int, int, int, int] = (0, 0, 0, 255)):
         """Clear the entire buffer with a given color."""
