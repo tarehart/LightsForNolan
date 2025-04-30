@@ -11,7 +11,7 @@ LIFESPAN_SECONDS = 1
 
 class ColorSplashEmitter(ParticleEmitter):
 
-    def __init__(self, x: int, y: int, vx: float, vy: float, bounds: Rectangle):
+    def __init__(self, x: float, y: float, vx: float, vy: float, bounds: Rectangle):
         super().__init__()
         self.step_count = 0
         self.x: float = x
