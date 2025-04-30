@@ -2,6 +2,7 @@ import pygame
 from pygame.time import Clock
 
 from animation.bouncy_ball_animation import BouncyBallAnimation
+from animation.color_fling_animation import ColorFlingAnimation
 from diagnostic.host_screen import HostScreen
 from diagnostic.logger import Logger
 from model.rectangle import Rectangle
@@ -21,7 +22,8 @@ if __name__ == '__main__':
     pygame.init()
     interface = WledInterface(wled_host, udp_port, SerpentinePixelMap(width, height))
     pixel_pusher = PixelPusher(interface)
-    animation = BouncyBallAnimation(Rectangle(0, 0, width, height))
+    # animation = BouncyBallAnimation(Rectangle(0, 0, width, height))
+    animation = ColorFlingAnimation(Rectangle(0, 0, width, height))
 
     logger = Logger()
     touch_pane = TouchPane()
@@ -32,17 +34,19 @@ if __name__ == '__main__':
     pixel_pusher.buffer.clear_all()
     pixel_pusher.send_all_pixels()
 
-
     while True:
-        clock.tick(30)
+        elapsed_millis = clock.tick(30)
         events = pygame.event.get()
         if any(e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE for e in events):
             break
 
-        animation.step(pixel_pusher.buffer)
-        touch_pane.step(events, pixel_pusher.buffer)
+        animation.update(elapsed_millis, events, pixel_pusher.buffer)
+        animation.draw(pixel_pusher.buffer)
+
+        # animation.step(pixel_pusher.buffer)
+        touch_pane.step(events)
         host_screen.step(pixel_pusher.expected_pixel_state)
 
-        pixel_pusher.send_opaque_pixels()
+        pixel_pusher.send_all_pixels()
 
     pygame.quit()

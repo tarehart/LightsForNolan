@@ -1,4 +1,6 @@
 import socket
+from typing import List, Tuple
+
 import pygame
 
 from model.serpentine_pixel_map import SerpentinePixelMap
@@ -47,6 +49,24 @@ class WledInterface:
                 color = surface.get_at((col, row))[:3]  # Extract (R, G, B) only
                 pixel_offset = 2 + index * 3
                 bytes_data[pixel_offset:pixel_offset + 3] = color
+
+        # Send packet
+        self.udp_socket.sendto(bytes_data, self.address)
+
+    def send_pixel_indices(self, indices: List[int], color: Tuple[int, int, int]):
+        """
+        This is for diagnostic purposes
+        """
+
+        # Pre-allocate the byte array
+        bytes_data = bytearray(2 + self.pixel_map.width * self.pixel_map.height * 3)
+        bytes_data[0] = self.DRGB_FORMAT
+        bytes_data[1] = 10
+
+        # Extract pixel data and reorder based on the serpentine mapping
+        for index in indices:
+            pixel_offset = 2 + index * 3
+            bytes_data[pixel_offset:pixel_offset + 3] = color[:3]
 
         # Send packet
         self.udp_socket.sendto(bytes_data, self.address)

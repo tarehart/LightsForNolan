@@ -35,7 +35,7 @@ class TouchPane:
         )
 
 
-    def step(self, events: List[EventType], buffer: LedDrawBuffer):
+    def step(self, events: List[EventType]):
         for event in events:
 
             # Detect touchscreen movements
@@ -47,10 +47,6 @@ class TouchPane:
                     screen_current = self.to_diagnostic_coordinates((event.x, event.y))
                     screen_previous = self.to_diagnostic_coordinates(self.finger_positions[finger_id])
                     pygame.draw.line(self.diagnostic_surface, WHITE, screen_previous, screen_current, 5)
-
-                    led_current = to_led_coordinates((event.x, event.y), (buffer.width, buffer.height))
-                    led_previous = to_led_coordinates(self.finger_positions[finger_id], (buffer.width, buffer.height))
-                    buffer.draw_line(led_previous, led_current, WHITE)
 
                 # Store new position
                 self.finger_positions[finger_id] = (event.x, event.y)
