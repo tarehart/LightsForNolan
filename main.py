@@ -1,5 +1,5 @@
 import pygame
-from pygame.time import Clock
+from pygame.time import Clock, get_ticks
 
 from animation.bouncy_ball_animation import BouncyBallAnimation
 from animation.color_fling_animation import ColorFlingAnimation
@@ -15,6 +15,10 @@ if __name__ == '__main__':
 
     wled_host = "192.168.0.109"
     udp_port = 21324
+
+    normal_frame_rate = 30
+    idle_frame_rate = 1
+    idle_after_no_interaction_millis = 60000
 
     width = 18
     height = 11
@@ -34,11 +38,20 @@ if __name__ == '__main__':
     pixel_pusher.buffer.clear_all()
     pixel_pusher.send_all_pixels()
 
+    last_interaction_time = get_ticks()
+
     while True:
-        elapsed_millis = clock.tick(30)
+
+        ticks = get_ticks()
+        frame_rate = normal_frame_rate if ticks - last_interaction_time < idle_after_no_interaction_millis else idle_frame_rate
+        elapsed_millis = clock.tick(frame_rate)
+
         events = pygame.event.get()
         if any(e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE for e in events):
             break
+
+        if len(events) > 0:
+            last_interaction_time = get_ticks()
 
         animation.update(elapsed_millis, events, pixel_pusher.buffer)
         animation.draw(pixel_pusher.buffer)

@@ -16,7 +16,7 @@ class SerpentinePixelMap:
 
         self.num_pixels = width * height
 
-        self.print_map()
+        # self.print_map()
 
     def get_pixel_index(self, row: int, col: int) -> int:
         return self.serpentine[row][col]
