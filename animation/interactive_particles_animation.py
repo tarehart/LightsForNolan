@@ -40,6 +40,10 @@ class InteractiveParticlesAnimation:
         self.screen_dimensions = (info.current_w, info.current_h)
         self.rainbow_vendor = RainbowVendor(6)
         
+        # Load sound effect
+        self.droplet_sound = pygame.mixer.Sound("sounds/droplet.wav")
+        self.droplet_sound.set_volume(1.0)  # Set to maximum volume
+        
         # Create initial particles
         for _ in range(4):
             self.spawn_new_particle()
@@ -90,6 +94,7 @@ class InteractiveParticlesAnimation:
                     (self.bounds.width, self.bounds.height)
                 )
                 self.ripples.append(ripple)
+                self.droplet_sound.play()  # Play sound when ripple is created
                 
                 # Remove the particle and spawn a replacement
                 self.particles.remove(particle)
@@ -121,6 +126,7 @@ class InteractiveParticlesAnimation:
                         # Create ripple effect
                         ripple = RippleParticle(p_pos, particle.color, (draw_buffer.width, draw_buffer.height))
                         self.ripples.append(ripple)
+                        self.droplet_sound.play()  # Play sound when ripple is created
                         # Spawn replacement with delay
                         self.spawn_new_particle()
                         

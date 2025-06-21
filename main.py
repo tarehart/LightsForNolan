@@ -45,7 +45,8 @@ if __name__ == '__main__':
     while True:
 
         ticks = get_ticks()
-        frame_rate = normal_frame_rate if ticks - last_interaction_time < idle_after_no_interaction_millis else idle_frame_rate
+        is_idle_mode = ticks - last_interaction_time > idle_after_no_interaction_millis
+        frame_rate = idle_frame_rate if is_idle_mode else normal_frame_rate
         elapsed_millis = clock.tick(frame_rate)
 
         events = pygame.event.get()
@@ -55,12 +56,17 @@ if __name__ == '__main__':
         if len(events) > 0:
             last_interaction_time = get_ticks()
 
-        animation.update(elapsed_millis, events, pixel_pusher.buffer)
-        animation.draw(pixel_pusher.buffer)
 
-        # animation.step(pixel_pusher.buffer)
-        touch_pane.step(events)
-        host_screen.step(pixel_pusher.expected_pixel_state)
+        if is_idle_mode:
+            pixel_pusher.buffer.clear_all()
+
+        else:
+            animation.update(elapsed_millis, events, pixel_pusher.buffer)
+            animation.draw(pixel_pusher.buffer)
+    
+            # animation.step(pixel_pusher.buffer)
+            touch_pane.step(events)
+            host_screen.step(pixel_pusher.expected_pixel_state)
 
         pixel_pusher.send_all_pixels()
 
