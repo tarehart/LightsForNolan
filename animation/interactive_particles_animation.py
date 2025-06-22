@@ -43,6 +43,15 @@ class InteractiveParticlesAnimation:
         # Load sound effect
         self.droplet_sound = pygame.mixer.Sound("sounds/droplet.wav")
         self.droplet_sound.set_volume(1.0)  # Set to maximum volume
+
+        self.number_sounds = [
+            pygame.mixer.Sound(f'sounds/{i + 1}.wav')
+            for i in range(10)
+        ]
+        for number_sound in self.number_sounds:
+            number_sound.set_volume(1.0)
+
+        self.number_index = 0
         
         # Create initial particles
         for _ in range(4):
@@ -95,6 +104,10 @@ class InteractiveParticlesAnimation:
                 )
                 self.ripples.append(ripple)
                 self.droplet_sound.play()  # Play sound when ripple is created
+
+                number_sound = self.number_sounds[self.number_index]
+                number_sound.play()
+                self.number_index = (self.number_index + 1) % 10
                 
                 # Remove the particle and spawn a replacement
                 self.particles.remove(particle)
@@ -102,46 +115,28 @@ class InteractiveParticlesAnimation:
                 break  # Only handle one collision per interaction
 
     def update(self, elapsed_millis: int, events: List[EventType], draw_buffer: LedDrawBuffer):
-        # Process events
+
+
+
+        # Handle events
         for event in events:
             if event.type in (pygame.MOUSEBUTTONDOWN, pygame.FINGERDOWN):
                 # Get position
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = (event.pos[0], event.pos[1])
+                    pos = (event.pos[0] / self.screen_dimensions[0], event.pos[1] / self.screen_dimensions[1])
                     # Set up drag tracker for mouse
                     self.drag_chunkers["mouse"] = DragChunker(
-                        (pos[0] / self.screen_dimensions[0], pos[1] / self.screen_dimensions[1]),
+                        pos,
                         200
                     )
                 else:  # FINGERDOWN
-                    pos = (event.x * self.bounds.width, event.y * self.bounds.height)
+                    pos = (event.x, event.y)
                     # Set up drag tracker for finger
-                    self.drag_chunkers[event.finger_id] = DragChunker((event.x, event.y), 200)
-                    
-                # Find and remove any particles at this position
-                for particle in self.particles[:]:
-                    p_pos = particle.get_position()
-                    if self.check_collision(pos, p_pos, particle.radius):  # 5 pixel radius for interaction
-                        self.particles.remove(particle)
-                        # Create ripple effect
-                        ripple = RippleParticle(p_pos, particle.color, (draw_buffer.width, draw_buffer.height))
-                        self.ripples.append(ripple)
-                        self.droplet_sound.play()  # Play sound when ripple is created
-                        # Spawn replacement with delay
-                        self.spawn_new_particle()
-                        
-        # Update particles
-        for particle in self.particles:
-            particle.tick()
-            
-        # Update and clean up ripples
-        self.ripples = [r for r in self.ripples if r.is_alive()]
-        for ripple in self.ripples:
-            ripple.tick()
+                    self.drag_chunkers[event.finger_id] = DragChunker(pos, 200)
 
-        # Handle events
-        for event in events:
-            if event.type == pygame.MOUSEBUTTONUP and "mouse" in self.drag_chunkers:
+                self.handle_interaction(pos, (draw_buffer.width, draw_buffer.height))
+
+            elif event.type == pygame.MOUSEBUTTONUP and "mouse" in self.drag_chunkers:
                 del self.drag_chunkers["mouse"]
 
             elif event.type == pygame.FINGERUP:
@@ -174,6 +169,15 @@ class InteractiveParticlesAnimation:
 
                     elif event.type == pygame.FINGERMOTION:
                         self.drag_chunkers[pointer_id] = DragChunker(position_normalized, 200)
+
+        # Update particles
+        for particle in self.particles:
+            particle.tick()
+
+        # Update and clean up ripples
+        self.ripples = [r for r in self.ripples if r.is_alive()]
+        for ripple in self.ripples:
+            ripple.tick()
 
     def draw(self, draw_buffer: LedDrawBuffer):
         # Draw all particles
