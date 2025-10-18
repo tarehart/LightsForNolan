@@ -2,6 +2,7 @@ import pygame
 from pygame import Surface
 
 from draw.led_draw_buffer import LedDrawBuffer
+from wled.pixel_push_mode import PixelPushMode
 from wled.wled_interface import WledInterface
 
 
@@ -24,3 +25,9 @@ class PixelPusher:
         self.wled_interface.send_all_pixels(self.buffer.surface)
         self.expected_pixel_state = self.buffer.surface.copy()
         self.buffer = LedDrawBuffer(self.width, self.height)
+
+    def send(self, mode: PixelPushMode):
+        if mode == PixelPushMode.SEND_ALL:
+            self.send_all_pixels()
+        elif mode == PixelPushMode.SEND_OPAQUE:
+            self.send_opaque_pixels()

@@ -9,6 +9,7 @@ from diagnostic.logger import Logger
 from model.rectangle import Rectangle
 from model.serpentine_pixel_map import SerpentinePixelMap
 from diagnostic.touch_pane import TouchPane
+from wled.pixel_push_mode import PixelPushMode
 from wled.pixel_pusher import PixelPusher
 from wled.wled_interface import WledInterface
 
@@ -56,18 +57,19 @@ if __name__ == '__main__':
         if len(events) > 0:
             last_interaction_time = get_ticks()
 
+        pixel_push_mode = PixelPushMode.SEND_ALL
 
         if is_idle_mode:
             pixel_pusher.buffer.clear_all()
 
         else:
             animation.update(elapsed_millis, events, pixel_pusher.buffer)
-            animation.draw(pixel_pusher.buffer)
+            pixel_push_mode = animation.draw(pixel_pusher.buffer)
     
             # animation.step(pixel_pusher.buffer)
             touch_pane.step(events)
             host_screen.step(pixel_pusher.expected_pixel_state)
 
-        pixel_pusher.send_all_pixels()
+        pixel_pusher.send(pixel_push_mode)
 
     pygame.quit()

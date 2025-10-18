@@ -5,6 +5,8 @@ from model.rectangle import Rectangle
 from draw.rainbow_vendor import RainbowVendor
 from datetime import datetime
 
+from wled.pixel_push_mode import PixelPushMode
+
 PIXELS_PER_SEC = 16
 
 class BouncyBallAnimation:
@@ -21,7 +23,7 @@ class BouncyBallAnimation:
             bounds.x, bounds.y, bounds.width - self.ball_size, bounds.height - self.ball_size
         )  # (x, y, width, height)
 
-    def step(self, draw_buffer: LedDrawBuffer):
+    def update(self):
 
         total_ticks = get_ticks()
         new_step_count = int(PIXELS_PER_SEC * total_ticks / 1000)
@@ -47,7 +49,10 @@ class BouncyBallAnimation:
             self.vx *= -1
             self.x = self.ball_bounds.min_x
 
+    def draw(self, draw_buffer: LedDrawBuffer) -> PixelPushMode:
         if datetime.now().second % 10 > 2:
             draw_buffer.fill_rect(self.x, self.y, 3, 3, self.rainbow_vendor.next_color() + (255,))
         else:
             draw_buffer.fill_rect(self.x, self.y, 5, 5, (0, 0, 0, 255))  # Black
+
+        return PixelPushMode.SEND_OPAQUE

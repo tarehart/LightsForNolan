@@ -4,12 +4,15 @@ import math
 import pygame
 from pygame.event import EventType
 
+from animation.bouncy_ball_animation import BouncyBallAnimation
 from draw.led_draw_buffer import LedDrawBuffer
 from draw.rainbow_vendor import RainbowVendor
 from input.drag_chunker import DragChunker
 from model.rectangle import Rectangle
 from particle.floating_particle import FloatingParticle
 from particle.ripple_particle import RippleParticle
+from wled.pixel_push_mode import PixelPushMode
+
 
 def to_led_coordinates(proportional_coords: Tuple[float, float], led_dimensions: Tuple[int, int]) -> Tuple[float, float]:
     return (
@@ -17,7 +20,6 @@ def to_led_coordinates(proportional_coords: Tuple[float, float], led_dimensions:
         proportional_coords[1] * led_dimensions[1]
     )
 
-SPEED_MULTIPLIER = 4
 PARTICLE_COLORS = [
     (255, 0, 0),    # Red
     (0, 255, 255),  # Cyan
@@ -26,7 +28,7 @@ PARTICLE_COLORS = [
 ]
 
 MIN_SPEED = 2
-MAX_SPEED = 5
+MAX_SPEED = 8
 SPAWN_MARGIN = 3  # How far outside the bounds to spawn particles
 TARGET_MARGIN = 1  # How far within the bounds the target must be
 
@@ -51,15 +53,21 @@ class InteractiveParticlesAnimation:
         for number_sound in self.number_sounds:
             number_sound.set_volume(1.0)
 
+        self.celebration_sound = pygame.mixer.Sound('sounds/ode_to_joy.mp3')
+        self.celebration_sound.set_volume(0.7)
+
+
         self.number_index = 0
-        
+        self.celebration_animation: BouncyBallAnimation | None = None
+        self.celebration_start_ticks = pygame.time.get_ticks()
+
         # Create initial particles
         for _ in range(4):
             self.spawn_new_particle()
         
     def spawn_new_particle(self):
-        # All particles spawn from the top
-        spawn_pos = (self.bounds.width / 2, -SPAWN_MARGIN)
+        # All particles spawn from the bottom
+        spawn_pos = (self.bounds.width / 2, self.bounds.height + SPAWN_MARGIN)
         
         # Choose random target within bounds to aim at
         target_x = random.uniform(TARGET_MARGIN, self.bounds.width - TARGET_MARGIN)
@@ -108,6 +116,13 @@ class InteractiveParticlesAnimation:
                 number_sound = self.number_sounds[self.number_index]
                 number_sound.play()
                 self.number_index = (self.number_index + 1) % 10
+
+                if self.number_index == 0:
+                    # We reached the end and looped around, let's celebrate
+                    # How can we change the blend mode
+                    self.celebration_animation = BouncyBallAnimation(self.bounds)
+                    self.celebration_start_ticks = pygame.time.get_ticks()
+                    self.celebration_sound.play()
                 
                 # Remove the particle and spawn a replacement
                 self.particles.remove(particle)
@@ -116,7 +131,11 @@ class InteractiveParticlesAnimation:
 
     def update(self, elapsed_millis: int, events: List[EventType], draw_buffer: LedDrawBuffer):
 
-
+        if self.celebration_animation is not None:
+            self.celebration_animation.update()
+            if pygame.time.get_ticks() - self.celebration_start_ticks > 27000:
+                self.celebration_animation = None
+            return
 
         # Handle events
         for event in events:
@@ -179,11 +198,17 @@ class InteractiveParticlesAnimation:
         for ripple in self.ripples:
             ripple.tick()
 
-    def draw(self, draw_buffer: LedDrawBuffer):
+    def draw(self, draw_buffer: LedDrawBuffer) -> PixelPushMode:
+
+        if self.celebration_animation is not None:
+            return self.celebration_animation.draw(draw_buffer)
+
         # Draw all particles
         for particle in self.particles:
             particle.draw(draw_buffer)
             
         # Draw ripple effects
         for ripple in self.ripples:
-            ripple.draw(draw_buffer) 
+            ripple.draw(draw_buffer)
+
+        return PixelPushMode.SEND_ALL
