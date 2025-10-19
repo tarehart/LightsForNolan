@@ -4,6 +4,7 @@ from pygame.time import Clock, get_ticks
 from animation.bouncy_ball_animation import BouncyBallAnimation
 from animation.color_fling_animation import ColorFlingAnimation
 from animation.interactive_particles_animation import InteractiveParticlesAnimation
+from animation.grid_touch_animation import GridTouchAnimation
 from diagnostic.host_screen import HostScreen
 from diagnostic.logger import Logger
 from model.rectangle import Rectangle
@@ -30,7 +31,8 @@ if __name__ == '__main__':
     pixel_pusher = PixelPusher(interface)
     # animation = BouncyBallAnimation(Rectangle(0, 0, width, height))
     # animation = ColorFlingAnimation(Rectangle(0, 0, width, height))
-    animation = InteractiveParticlesAnimation(Rectangle(0, 0, width, height))
+    # animation = InteractiveParticlesAnimation(Rectangle(0, 0, width, height))
+    animation = GridTouchAnimation(Rectangle(0, 0, width, height), cell_width=3, cell_height=3)
 
     logger = Logger()
     touch_pane = TouchPane()
