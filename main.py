@@ -16,7 +16,7 @@ from wled.wled_interface import WledInterface
 
 if __name__ == '__main__':
 
-    wled_host = "192.168.0.109"
+    wled_host = "10.0.0.121"
     udp_port = 21324
 
     normal_frame_rate = 30
